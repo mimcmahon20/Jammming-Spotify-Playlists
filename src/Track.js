@@ -7,11 +7,10 @@ function Track(props) {
         <div className="Track">
             <div className="Track-information">
                 <AlbumCover src="../public/logo512.png" />
-                <h3>Song Name</h3>
-                <p>Artist Name</p>
+                <h3>{props.SongName}</h3>
+                <p>{props.ArtistName}</p>
             <div className="Commands">
-                <button className="Track-action"> - </button>
-                <button className="Track-action">+</button>
+                <button className="Track-action" onClick={() => props.onRemove(props.id)}>{props.Action}</button>
             </div>
             </div>
         </div>
