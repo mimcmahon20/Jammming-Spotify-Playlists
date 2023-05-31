@@ -1,9 +1,10 @@
 import React from "react";
+import "./AlbumCover.css";
 
 function AlbumCover(props) {
     return (
         <div className="AlbumCover">
-            <img src={props.src}/>
+            <img className="Cover" src={props.src}/>
         </div>
     ); 
 };

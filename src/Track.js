@@ -17,10 +17,13 @@ function Track(props) {
   return (
     <div className="track">
       <div className="track-info">
-        <h3>{track.SongName}</h3>
-        <p>{track.ArtistName}</p>
-        <button className="commands" onClick={handleRemoveTrack}>{track.Action}</button>
+        <AlbumCover src={track.AlbumSrc} />
+        <div className="artist-title">
+          <h3>{track.SongName}</h3>
+          <p>{track.ArtistName}</p>
+        </div>
       </div>
+        <button className="commands" onClick={handleRemoveTrack}>{track.Action}</button>
     </div>
   );
 };
