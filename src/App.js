@@ -11,6 +11,7 @@ function App() {
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
   const [ token, setToken ] = useState(null);
+  const [ userID, setUserID ] = useState(null);
 
   useEffect(() => { 
     const hash = window.location.hash
@@ -21,11 +22,23 @@ function App() {
       window.location.hash = "";
     }
     setToken(token);
-  });
+
+    const getUserID = async () => {
+      const {data} = await axios.get("https://api.spotify.com/v1/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserID(data.id);
+    }
+    if(token) {
+      getUserID();
+    }
+    
+    console.log(userID);
+  }, [token]);
 
 
 
-  const auth = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`;
+  const auth = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=playlist-modify-private playlist-modify-public`;
   
 
   function logout() {
@@ -54,13 +67,12 @@ function App() {
 
   
   const searchSongs = async (e) => {
+    e.preventDefault();
     const {data} = await axios.get(`https://api.spotify.com/v1/search?q=${searchKey}&type=track`, {
       headers: { Authorization: `Bearer ${token}` },
       params: { q: searchKey, type: "track", limit: 5}
     });
-    console.log(data);
-    console.log(data.tracks.items);
-    console.log(data.tracks.items.length);
+
     const updatedSearchTracks = [];
     data.tracks.items.map((track) => {
       updatedSearchTracks.push({
@@ -77,13 +89,14 @@ function App() {
   
   const makePlaylist = async (e) => { 
     console.log(token);
-    const {data} = await axios.post(`https://api.spotify.com/v1/users/${token}/playlists`, {
+    console.log(userID);
+    const {data} = await axios.post(`https://api.spotify.com/v1/users/${userID}/playlists`, {
       headers: { Authorization: `Bearer ${token}` },
-      params: { name: "My Playlist", public: false}
+      params: { name: "My Playlist"}
     });
     console.log(data);
     
-    const playlistID = data.id;
+    //const playlistID = data.id;
   };
   
   
@@ -103,7 +116,6 @@ function App() {
         </a>
         : <><button className="Logout" onClick={logout}> Log-out </button>
           <SearchBar 
-            searchKey={searchKey}
             setSearchKey={setSearchKey}
             searchSongs={searchSongs}
           /></> 
