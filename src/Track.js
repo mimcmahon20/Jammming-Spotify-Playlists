@@ -3,18 +3,26 @@ import AlbumCover from "./AlbumCover";
 import "./Track.css";
 
 function Track(props) { 
-    return (
-        <div className="Track">
-            <div className="Track-information">
-                <AlbumCover src="../public/logo512.png" />
-                <h3>{props.SongName}</h3>
-                <p>{props.ArtistName}</p>
-            <div className="Commands">
-                <button className="Track-action" onClick={() => props.onRemove(props.id)}>{props.Action}</button>
-            </div>
-            </div>
-        </div>
-    ); 
+    
+    const { track, onRemoveTrack, onAddToPlaylist } = props;
+
+  function handleRemoveTrack() {
+    onRemoveTrack(track.key);
+    if(track.Action === "+") {
+        track.Action = "-";
+        onAddToPlaylist(track);
+    }
+  }
+
+  return (
+    <div className="track">
+      <div className="track-info">
+        <h3>{track.SongName}</h3>
+        <p>{track.ArtistName}</p>
+        <button className="commands" onClick={handleRemoveTrack}>{track.Action}</button>
+      </div>
+    </div>
+  );
 };
 
 export default Track;

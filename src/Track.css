@@ -1,12 +1,12 @@
-.Track {
-    border: 1px solid red;
+.track {
+    border: 1px solid rgb(0, 255, 21);
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50%;
+    width: 100%;
 }
 
-.Track-information {
+.track-info {
     display: flex;
     flex-direction: row;
     margin: 10px;
@@ -14,7 +14,7 @@
     justify-content: space-between;
 }
 
-.Commands {
+.commands {
     display: flex;
     justify-content: center;
     align-items: center;

@@ -1,22 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import TrackList from "./TrackList";
-import "./Playlist.css";
 
 function Playlist(props) {
-    const playlistTracks = [];
+    const { playlistTracks, onRemoveTrack } = props;
 
-    for(let i = 0; i < 6; i++) {
-        playlistTracks.push({id: i, SongName: i, ArtistName: "Artist Name", Action: "-"})
-        console.log(playlistTracks);
-    }
+    const [ playlistTitle, setPlaylistTitle ] = useState("New Playlist");
+
 
     return (
         <div className="Playlist">
-            <input value="New Playlist"/>
-            <TrackList tracks={playlistTracks}/>
+            <input value={playlistTitle} onChange={(e) => setPlaylistTitle(e.target.value)}/>
+            <TrackList tracks={playlistTracks} onRemoveTrack={onRemoveTrack} />
             <button className="Playlist-save">SAVE TO SPOTIFY</button>
         </div>
-    ); 
-};
+  );
+}
 
 export default Playlist;

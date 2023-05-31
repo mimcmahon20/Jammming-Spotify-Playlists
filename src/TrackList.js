@@ -1,41 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import Track from "./Track";
 
 
-
 function TrackList(props) {
-    const [tracks, setTracks] = useState([]); // [tracks, setTracks
+    const { tracks, onRemoveTrack, onAddTrack } = props;
     
-    console.log(props.tracks.length);
-
-    function addTrack() {
-        console.log("addTrack");
-    }
-
-    function removeTrack(id) {
-        console.log("removeTrack: " + id);
-        setTracks(tracks);
-    }
-
-
-    for(let i = 0; i < props.tracks.length; i++) {
-        console.log(i);
-        tracks.push(<Track
-            id={props.tracks[i].id}
-            SongName={props.tracks[i].SongName}
-            ArtistName={props.tracks[i].ArtistName}
-            Action={props.tracks[i].Action} 
-            onRemove={removeTrack}
-            onAdd={addTrack}
-            />);
-    }
-
     return (
-        <div className="TrackList">
-        {tracks}
-        </div>
-    ); 
-};
+      <div className="track-list">
+        {tracks.map((track) => (
+          <Track
+            key={track.key} 
+            track={track} 
+            onRemoveTrack={onRemoveTrack} 
+            onAddToPlaylist={onAddTrack}
+          />
+        ))}
+      </div>
+    );
+}
 
 
 export default TrackList;
