@@ -90,10 +90,15 @@ function App() {
   const makePlaylist = async (e) => { 
     console.log(token);
     console.log(userID);
-    const {data} = await axios.post(`https://api.spotify.com/v1/users/${userID}/playlists`, {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { name: "My Playlist"}
+    const { data } = await fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
     });
+    // axios.post(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+    //   headers: { Authorization: `Bearer ${token}` }
+    // });
     console.log(data);
     
     //const playlistID = data.id;
