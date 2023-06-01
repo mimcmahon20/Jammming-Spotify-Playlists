@@ -8,7 +8,7 @@ import UsersTopTracks from './UsersTopTracks';
 
 function App() {
   const CLIENT_ID = "8546073d8994458e920834495ed2eaea";
-  const REDIRECT_URI = "http://localhost:3000/";
+  const REDIRECT_URI = "https://647912ad52f124000828ad81--zippy-churros-8887e2.netlify.app/";
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
   const [ token, setToken ] = useState(null);
