@@ -173,6 +173,9 @@ function App() {
           uris: uris
         })
       });
+      if(secondResponse.ok) {
+        console.log("success");
+      }
     } else {
       console.error('Failed to create playlist:', response.status, response.statusText);
     }
