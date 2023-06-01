@@ -2,8 +2,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: top;
     margin: 10px;
+    width: 100%;
+}
+
+
+.playlist-heading {
+    display: flex;
+    width: 100%;
+    margin: 10px;
+    height: 80px;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    align-items: center;
 }
 
 .Playlist-save {
@@ -36,3 +49,4 @@
     border: none;
     outline: none;
 }
+

@@ -4,6 +4,7 @@ import SearchBar from './SearchBar';
 import SearchResults from './SearchResults';
 import Playlist from './Playlist';
 import axios from 'axios';
+import UsersTopTracks from './UsersTopTracks';
 
 function App() {
   const CLIENT_ID = "8546073d8994458e920834495ed2eaea";
@@ -12,6 +13,9 @@ function App() {
   const RESPONSE_TYPE = "token";
   const [ token, setToken ] = useState(null);
   const [ userID, setUserID ] = useState(null);
+  const [ topTrackOffset, setTopTrackOffset ] = useState(0);
+  let time_range = "long_term";
+  const LIMIT = 10;
 
   useEffect(() => { 
     const hash = window.location.hash
@@ -29,14 +33,36 @@ function App() {
       });
       setUserID(data.id);
     }
+
+    const getTopSongs = async () => {
+      const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { time_range: time_range, limit: LIMIT }
+      });
+      const updatedTopTracks = [];
+      data.items.forEach((track) => {
+        updatedTopTracks.push({
+          key: track.id,
+          SongName: track.name,
+          ArtistName: track.artists[0].name,
+          Action: "+",
+          AlbumSrc: track.album.images[2].url,
+          uri: track.uri
+        });
+      });
+      setTopTracks(updatedTopTracks);
+    }  
+
+    
     if(token) {
       getUserID();
+      getTopSongs();
     }
-  }, [token, userID]);
+  }, [token, userID, time_range]);
 
 
 
-  const auth = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=playlist-modify-private playlist-modify-public`;
+  const auth = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=playlist-modify-private playlist-modify-public user-top-read`;
   
 
   function logout() {
@@ -47,6 +73,7 @@ function App() {
   const [searchKey, setSearchKey] = useState([]);
   const [searchTracks, setSearchTracks] = useState([]);
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [topTracks, setTopTracks] = useState([]);
   const [playlistName, setPlaylistName] = useState("The New Playlist");
 
   function removeSearchTrack(key) {
@@ -59,6 +86,34 @@ function App() {
     setPlaylistTracks(updatedPlaylistTracks);
   }
 
+  function removeTopTrack(key) {
+    const updatedTopTracks = topTracks.filter((track) => track.key !== key);
+    setTopTracks(updatedTopTracks);
+  }
+
+  function refreshTopTracks() {
+    setTopTrackOffset(topTrackOffset >= 40 ? 0 : topTrackOffset + 10);
+    const getTopSongs = async (topTrackOffset) => {
+      const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { time_range: time_range, limit: LIMIT, offset: topTrackOffset }
+      });
+      const updatedTopTracks = [];
+      data.items.forEach((track) => {
+        updatedTopTracks.push({
+          key: track.id,
+          SongName: track.name,
+          ArtistName: track.artists[0].name,
+          Action: "+",
+          AlbumSrc: track.album.images[2].url,
+          uri: track.uri
+        });
+      });
+      setTopTracks(updatedTopTracks);
+    }
+    getTopSongs(topTrackOffset);
+  }
+
   function addPlaylistTrack(track) {
     const updatedPlaylistTracks = [...playlistTracks, track];
     setPlaylistTracks(updatedPlaylistTracks);
@@ -69,11 +124,11 @@ function App() {
     e.preventDefault();
     const {data} = await axios.get(`https://api.spotify.com/v1/search?q=${searchKey}&type=track`, {
       headers: { Authorization: `Bearer ${token}` },
-      params: { q: searchKey, type: "track", limit: 5}
+      params: { q: searchKey, type: "track", limit: LIMIT}
     });
 
     const updatedSearchTracks = [];
-    data.tracks.items.map((track) => {
+    data.tracks.items.forEach((track) => {
       updatedSearchTracks.push({
         key: track.id,
         SongName: track.name,
@@ -103,13 +158,11 @@ function App() {
     if (response.ok) {
       const playlistData = await response.json();
       const playlistID = playlistData.id;
-      console.log(playlistID);
 
       let uris = [];
       playlistTracks.forEach((track) => {
         uris.push(`spotify:track:${track.key}`);
       });
-      console.log(uris);
       const secondResponse = await fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
         method: 'POST',
         headers: {
@@ -120,8 +173,6 @@ function App() {
           uris: uris
         })
       });
-      const secondResponseData = await secondResponse.json(); // Get response data
-      console.log(secondResponseData);
     } else {
       console.error('Failed to create playlist:', response.status, response.statusText);
     }
@@ -135,6 +186,7 @@ function App() {
     makePlaylist();
     setPlaylistTracks([]);
   }
+
 
 
   return (
@@ -164,6 +216,12 @@ function App() {
           onRemoveTrack={removePlaylistTrack}
           onResetPlaylist={resetPlaylist}
           onChangePlaylistName={setPlaylistName}
+        />
+        <UsersTopTracks
+          refreshTopTracks={refreshTopTracks}
+          topTracks={topTracks}
+          onRemoveTrack={removeTopTrack}
+          onAddTrack={addPlaylistTrack}
         />
       </div>
     </div>
