@@ -12,6 +12,7 @@ function App() {
   const RESPONSE_TYPE = "token";
   const [ token, setToken ] = useState(null);
   const [ userID, setUserID ] = useState(null);
+  const [ userHref, setUserHref ] = useState(null);
 
   useEffect(() => { 
     const hash = window.location.hash
@@ -28,6 +29,8 @@ function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserID(data.id);
+      setUserHref(data.href);
+      console.log(data);
     }
     if(token) {
       getUserID();
@@ -49,6 +52,7 @@ function App() {
   const [searchKey, setSearchKey] = useState([]);
   const [searchTracks, setSearchTracks] = useState([]);
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [playlistName, setPlaylistName] = useState("The New Playlist");
 
   function removeSearchTrack(key) {
     const updatedSearchTracks = searchTracks.filter((track) => track.key !== key);
@@ -89,11 +93,16 @@ function App() {
   
   const makePlaylist = async (e) => { 
     console.log(token);
-    console.log(userID);
-    const { data } = await fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+    console.log(userHref);
+    const { data } = await fetch(`${userHref}/playlists`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+      body: {
+        "name": "New Playlist",
+        "description": "New playlist description",
+        "public": false
       }
     });
     // axios.post(`https://api.spotify.com/v1/users/${userID}/playlists`, {
