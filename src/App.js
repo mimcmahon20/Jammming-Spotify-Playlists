@@ -12,7 +12,6 @@ function App() {
   const RESPONSE_TYPE = "token";
   const [ token, setToken ] = useState(null);
   const [ userID, setUserID ] = useState(null);
-  const [ userHref, setUserHref ] = useState(null);
 
   useEffect(() => { 
     const hash = window.location.hash
@@ -29,15 +28,11 @@ function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserID(data.id);
-      setUserHref(data.href);
-      console.log(data);
     }
     if(token) {
       getUserID();
     }
-    
-    console.log(userID);
-  }, [token]);
+  }, [token, userID]);
 
 
 
@@ -91,24 +86,46 @@ function App() {
     setSearchTracks(updatedSearchTracks);
   }
   
-  const makePlaylist = async (e) => { 
-    console.log(token);
-    console.log(userHref);
-    const { data } = await fetch(`${userHref}/playlists`, {
-      method: "POST",
+  const makePlaylist = async () => { 
+    const response = await fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
-      body: {
-        "name": "New Playlist",
-        "description": "New playlist description",
-        "public": false
-      }
+      body: JSON.stringify({
+        name: playlistName,
+        public: false // Set to true if you want the playlist to be public
+      })
+  
     });
-    // axios.post(`https://api.spotify.com/v1/users/${userID}/playlists`, {
-    //   headers: { Authorization: `Bearer ${token}` }
-    // });
-    console.log(data);
+
+    if (response.ok) {
+      const playlistData = await response.json();
+      const playlistID = playlistData.id;
+      console.log(playlistID);
+
+      let uris = [];
+      playlistTracks.forEach((track) => {
+        uris.push(`spotify:track:${track.key}`);
+      });
+      console.log(uris);
+      const secondResponse = await fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uris: uris
+        })
+      });
+      const secondResponseData = await secondResponse.json(); // Get response data
+      console.log(secondResponseData);
+    } else {
+      console.error('Failed to create playlist:', response.status, response.statusText);
+    }
+
     
     //const playlistID = data.id;
   };
@@ -143,8 +160,10 @@ function App() {
         />
         <Playlist
           playlistTracks={playlistTracks}
+          playlistName={playlistName}
           onRemoveTrack={removePlaylistTrack}
           onResetPlaylist={resetPlaylist}
+          onChangePlaylistName={setPlaylistName}
         />
       </div>
     </div>
