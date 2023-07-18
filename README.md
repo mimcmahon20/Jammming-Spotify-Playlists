@@ -1,13 +1,20 @@
-#Jammming Spotify Playlists
+# Jammming Spotify Playlists
 
-🔴 My first React App I learned about state management, API requests, props, and much more. The app allows users to search for songs, add them to a playlist, add their most listened to songs, and add the playlist to their library. Note: This app requires access to be added in the backend for Spotify's API. If you'd like to try it, reach out!
 
-##Features
+My first React App I learned about state management, API requests, props, and much more. The app allows users to search for songs, add them to a playlist, add their most listened to songs, and add the playlist to their library. Note: This app requires access to be added in the backend for Spotify's API. If you'd like to try it, reach out!
+
+
+## Features
 🟠 Allows users to sign in and out of their Spotify accounts through Spotify's API
+
 🟤 Create multiple playlists in the same session 
+
 🟡 Playlist creation is not shown until the user signs in
+
 🟢 Dynamically displays search results as the user types
+
 🔵 Displays users' all-time most streamed songs and allows them to be added to the playlist
+
 🟣 Custom playlist names
 
 
